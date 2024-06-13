@@ -1,42 +1,47 @@
 import React, { useState } from "react";
 
-function NewTaskForm({ onTaskFormSubmit, categories }) {
-  const [newItemFields, setNewItemFields] = useState({
-    text: '',
-    category: 'Code'
-  });
+function NewTaskForm( { categories, onTaskFormSubmit } ) {
+  const [newTask, setNewTask] = useState("");
+  const [newCategory, setNewCategory] = useState("Code");
 
-  function handleFields(e) {
-    const { name, value } = e.target;
-    setNewItemFields({ ...newItemFields, [name]: value });
-  }
-
-  function handleSubmit(e) {
-    e.preventDefault();
-    if (newItemFields.category.toLowerCase() !== "all") {     
-      onTaskFormSubmit(newItemFields);
-    } else {
-      alert("Error: You cannot choose the 'all' category. Please select a specific category.");
+  const categoriesDisplayed = categories.map((category, index) => {
+    if (category !== "All") {
+      return(
+        <option key={index}  value={category}>{category}</option>
+      );
     }
+    else {
+      return (null);
+    }
+  })
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    const addTask = {
+      text: newTask,
+      category: newCategory
+    }
+
+    onTaskFormSubmit(addTask);
+
+    setNewCategory("Code");
+    setNewTask("");
   }
 
   return (
-    <form onSubmit={handleSubmit} className="new-task-form">
+    <form className="new-task-form" onSubmit={handleSubmit}>
       <label>
         Details
-        <input value={newItemFields.text} onChange={handleFields} type="text" name="text" />
+        <input type="text" name="text" value={newTask} onChange={(e)=>setNewTask(e.target.value)}/>
       </label>
-
       <label>
         Category
-        <select value={newItemFields.category} onChange={handleFields} name="category">
+        <select name="category" value={newCategory} onChange={(e)=>setNewCategory(e.target.value)}>
           {/* render <option> elements for each category here */}
-          {categories.map((category, index) => (
-            <option key={index}>{category}</option>
-          ))}
+          {categoriesDisplayed}
         </select>
       </label>
-
       <input type="submit" value="Add task" />
     </form>
   );
